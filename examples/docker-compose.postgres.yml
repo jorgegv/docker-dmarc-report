@@ -1,6 +1,6 @@
 services:
   dmarc-report:
-    image: "gutmensch/dmarc-report:latest"
+    image: "jorgegv/dmarc-report:latest"
     hostname: dmarc-report
     container_name: dmarc-report
     restart: always

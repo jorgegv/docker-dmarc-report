@@ -2,10 +2,10 @@ ARG UPSTREAM_IMAGE=trafex/php-nginx:2.6.0
 
 FROM $UPSTREAM_IMAGE
 
-LABEL maintainer="Robert Schumann <rs@n-os.org>"
+LABEL maintainer="Jorge Gonzalez <j.g.villalonga@gmail.com>"
 
-ENV REPORT_PARSER_SOURCE="https://github.com/techsneeze/dmarcts-report-parser/archive/master.zip" \
-  REPORT_VIEWER_SOURCE="https://github.com/techsneeze/dmarcts-report-viewer/archive/master.zip"
+ENV REPORT_PARSER_SOURCE="https://github.com/jorgegv/dmarcts-report-parser/archive/master.zip" \
+  REPORT_VIEWER_SOURCE="https://github.com/jorgegv/dmarcts-report-viewer/archive/master.zip"
 
 USER root
 
