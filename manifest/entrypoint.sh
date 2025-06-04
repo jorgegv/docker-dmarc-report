@@ -30,15 +30,28 @@ env | grep -e 'REPORT_DB_TYPE' -e 'REPORT_DB_HOST' -e 'REPORT_DB_PORT' -e 'REPOR
 # compat from older image where variable was not existing
 grep -e ^REPORT_DB_PORT "$PHP_ENV_FILE" || echo env[REPORT_DB_PORT] = 3306 >> "$PHP_ENV_FILE"
 
+# create log directory
+mkdir -p /var/log/dmarc 2>/dev/null
+
 # Get and parse dmarc reports once at startup to avoid PHP errors with a new database
-if /usr/bin/dmarcts-report-parser.pl -i -d -r > /var/log/nginx/dmarc-reports.log 2>&1; then
+if /usr/bin/dmarcts-report-parser.pl -i -d -r > /var/log/dmarc/dmarc-reports-parser.log 2>&1; then
   echo 'INFO: Dmarc reports parsed successfully'
 else
   echo 'CRIT: Dmarc reports could not be parsed. Check your IMAP and MYSQL Settings.'
   echo -e "DEBUG: Parsing failed with the following output:\n"
-  cat /var/log/nginx/dmarc-reports.log
+  cat /var/log/dmarc/dmarc-reports-parser.log
   exit 1
 fi
+
+# replace scheduling params in crontab file
+sed -i "s/%%PARSER_CRON_HOUR%%/$PARSER_EXECUTION_HOUR/g"	/etc/cron.d/root
+sed -i "s/%%PARSER_CRON_MIN%%/$PARSER_EXECUTION_MIN/g"		/etc/cron.d/root
+sed -i "s/%%AGGREG_CRON_HOUR%%/$AGGREGATOR_EXECUTION_HOUR/g"	/etc/cron.d/root
+sed -i "s/%%AGGREG_CRON_MIN%%/$AGGREGATOR_EXECUTION_MIN/g"	/etc/cron.d/root
+sed -i "s/%%AGGREG_DELY_DAYS%%/$AGGREGATOR_DELAY_DAYS/g"	/etc/cron.d/root
+sed -i "s/%%PURGER_CRON_HOUR%%/$PURGER_EXECUTION_HOUR/g"	/etc/cron.d/root
+sed -i "s/%%PURGER_CRON_MIN%%/$PURGER_EXECUTION_MIN/g"		/etc/cron.d/root
+sed -i "s/%%PURGER_RETN_DAYS%%/$PURGER_DATA_RETENTION_DAYS/g"	/etc/cron.d/root
 
 # Start supervisord and services
 /usr/bin/supervisord -n -c /etc/supervisord.conf

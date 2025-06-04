@@ -1,2 +1,3 @@
-15 * * * * /usr/bin/dmarcts-report-parser.pl -i -d -r 1>>/var/log/nginx/dmarc-reports.log 2>&1
-
+%%PARSER_CRON_MIN%% %%PARSER_CRON_HOUR%% * * * /usr/bin/dmarcts-report-parser.pl -i -d -r >>/var/log/dmarc/dmarc-reports-parser.log 2>&1
+%%AGGREG_CRON_MIN%% %%AGGREG_CRON_HOUR%%  * * * /usr/bin/dmarcts-report-aggregator.pl -b %%AGGREG_DELY_DAYS%% >>/var/log/dmarc/dmarc-reports-aggregator.log 2>&1
+%%PURGER_CRON_MIN%% %%PURGER_CRON_HOUR%%  * * * /usr/bin/dmarcts-report-purger.pl -b %%PURGER_RETN_DAYS%% >>/var/log/dmarc/dmarc-reports-purger.log 2>&1
