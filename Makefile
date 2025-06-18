@@ -2,7 +2,7 @@
 .PHONY: build push
 
 IMAGE_TAG	= docker.io/jorgegv/dmarc-report
-IMAGE_VERSION	= 1.0.0
+IMAGE_VERSION	= 1.0.1
 
 default:
 

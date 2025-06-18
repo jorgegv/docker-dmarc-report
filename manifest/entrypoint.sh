@@ -34,13 +34,16 @@ grep -e ^REPORT_DB_PORT "$PHP_ENV_FILE" || echo env[REPORT_DB_PORT] = 3306 >> "$
 mkdir -p /var/log/dmarc 2>/dev/null
 
 # Get and parse dmarc reports once at startup to avoid PHP errors with a new database
-if /usr/bin/dmarcts-report-parser.pl -i -d -r > /var/log/dmarc/dmarc-reports-parser.log 2>&1; then
-  echo 'INFO: Dmarc reports parsed successfully'
-else
-  echo 'CRIT: Dmarc reports could not be parsed. Check your IMAP and MYSQL Settings.'
-  echo -e "DEBUG: Parsing failed with the following output:\n"
-  cat /var/log/dmarc/dmarc-reports-parser.log
-  exit 1
+# may be disabled for tests
+if [ $PARSER_RUN_ON_STARTUP -eq 1 ]; then
+  if /usr/bin/dmarcts-report-parser.pl -i -d -r > /var/log/dmarc/dmarc-reports-parser.log 2>&1; then
+    echo 'INFO: Dmarc reports parsed successfully'
+  else
+    echo 'CRIT: Dmarc reports could not be parsed. Check your IMAP and MYSQL Settings.'
+    echo -e "DEBUG: Parsing failed with the following output:\n"
+    cat /var/log/dmarc/dmarc-reports-parser.log
+    exit 1
+  fi
 fi
 
 # replace scheduling params in crontab file
