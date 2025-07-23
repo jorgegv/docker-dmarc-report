@@ -74,6 +74,9 @@ RUN set -e -x \
   Socket6 \
   PerlIO::gzip \
   Modern::Perl \
+  DateTime \
+  Net::Prometheus \
+  Plack \
   ; do cpan install $i; done \
   && apk del mariadb-dev expat-dev openssl-dev perl-dev g++ cmake make musl-obstack-dev libpq-dev
 
