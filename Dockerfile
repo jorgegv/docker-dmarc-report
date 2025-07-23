@@ -73,11 +73,13 @@ RUN set -e -x \
   Socket \
   Socket6 \
   PerlIO::gzip \
+  Modern::Perl \
   ; do cpan install $i; done \
   && apk del mariadb-dev expat-dev openssl-dev perl-dev g++ cmake make musl-obstack-dev libpq-dev
 
 HEALTHCHECK --interval=1m --timeout=3s CMD curl --silent --fail http://127.0.0.1:80/fpm-ping
 
 EXPOSE 80
+EXPOSE 9100
 
 CMD ["/bin/bash", "/entrypoint.sh"]
