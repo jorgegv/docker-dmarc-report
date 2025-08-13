@@ -1,11 +1,14 @@
 ARG UPSTREAM_IMAGE=trafex/php-nginx:2.6.0
-
 FROM $UPSTREAM_IMAGE
+
+# these two come from the Makefile
+ARG PARSER_VERSION
+ARG VIEWER_VERSION
 
 LABEL maintainer="Jorge Gonzalez <j.g.villalonga@gmail.com>"
 
-ENV REPORT_PARSER_SOURCE="https://github.com/jorgegv/dmarcts-report-parser/archive/master.zip" \
-  REPORT_VIEWER_SOURCE="https://github.com/jorgegv/dmarcts-report-viewer/archive/master.zip"
+ENV REPORT_PARSER_SOURCE="https://github.com/jorgegv/dmarcts-report-parser/archive/refs/tags/$PARSER_VERSION.zip" \
+  REPORT_VIEWER_SOURCE="https://github.com/jorgegv/dmarcts-report-viewer/archive/refs/tags/$VIEWER_VERSION.zip"
 
 USER root
 
@@ -38,10 +41,12 @@ RUN set -e -x \
   php81-pdo_pgsql \
   tzdata \
   wget \
-  && wget -4 -q --no-check-certificate -O parser.zip $REPORT_PARSER_SOURCE \
+  && wget -4 --no-check-certificate -O parser.zip $REPORT_PARSER_SOURCE \
   && wget -4 -q --no-check-certificate -O viewer.zip $REPORT_VIEWER_SOURCE \
-  && unzip parser.zip && cp -av dmarcts-report-parser-master/* /usr/bin/ && rm -vf parser.zip && rm -rvf dmarcts-report-parser-master \
-  && unzip viewer.zip && cp -av dmarcts-report-viewer-master/* /var/www/viewer/ && rm -vf viewer.zip && rm -rvf dmarcts-report-viewer-master \
+  && unzip parser.zip && cp -av dmarcts-report-parser-$PARSER_VERSION/* /usr/bin/ \
+  && rm -vf parser.zip && rm -rvf dmarcts-report-parser-$PARSER_VERSION \
+  && unzip viewer.zip && cp -av dmarcts-report-viewer-$VIEWER_VERSION/* /var/www/viewer/ \
+  && rm -vf viewer.zip && rm -rvf dmarcts-report-viewer-$VIEWER_VERSION \
   && sed -i "1s/^/body { font-family: Sans-Serif; }\n/" /var/www/viewer/default.css \
   && sed -i 's%.*listen [::]:8080 default_server;%        listen [::]:80 default_server;%g' /etc/nginx/nginx.conf \
   && sed -i 's%.*listen 8080 default_server;%        listen 80 default_server;%g' /etc/nginx/nginx.conf \
